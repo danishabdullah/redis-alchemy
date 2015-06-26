@@ -172,7 +172,7 @@ class RSet(object):
     def __del__(self):
         res = self.redis.delete(self.key)
         self.store.store = None
-        self.store.store._dirty = True
+        self.store._dirty = True
         return res
 
 
@@ -248,10 +248,6 @@ class RHash(object):
     def __del__(self):
         res = self.redis.delete(self.key)
         self.store.store = None
-        self.store.store._dirty = True
+        self.store._dirty = True
         return res
-
-
-
-
 
