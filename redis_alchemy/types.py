@@ -3,7 +3,10 @@ from __future__ import unicode_literals, absolute_import, print_function
 __author__ = 'danishabdullah'
 
 from .utils import prepend_prefix
-import ujson
+try:
+    import ujson as json
+except ImportError:
+    import json
 from collections import MutableSet, MutableMapping
 from datetime import datetime
 
@@ -90,7 +93,7 @@ class RedisHashContainer(MutableMapping):
         res = self.redis.hgetall(self.key)
         if self.serialize and self.serializer:
             for k, v in res.iteritems():
-                res[k] = ujson.loads(v)
+                res[k] = json.loads(v)
         self.store = res
         self._dirty = False
         return datetime.now()
@@ -101,7 +104,7 @@ class RedisHashContainer(MutableMapping):
     def __setitem__(self, field, value):
         if value:
             if self.serialize and self.serializer:
-                value = ujson.dumps(value)
+                value = json.dumps(value)
         res = self.redis.hset(self.key, field, value)
         self.store[field] = value
         self._dirty = True
@@ -240,7 +243,7 @@ class RHash(object):
         self.__del__()
         if self.serializer and self.serialize:
             for k, v in hash.iteritems():
-                hash[k] = ujson.dumps(v, ensure_ascii=False)
+                hash[k] = json.dumps(v, ensure_ascii=False)
         res = self.redis.hmset(self.key, hash)
         self.store._dirty = True
         return res
